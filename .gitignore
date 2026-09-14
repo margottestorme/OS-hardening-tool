@@ -1,0 +1,27 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- ne jamais versionner les sauvegardes ni les rapports générés ---
+backups/
+reports/
+*.log
+
+# --- Artefacts de VM / machine locale ---
+*.vdi
+*.vmdk
+*.qcow2
+.DS_Store
+
+# --- Éditeurs ---
+.vscode/
+.idea/
+
+claude.md

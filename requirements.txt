@@ -1,0 +1,12 @@
+# Chargement des règles déclaratives
+PyYAML>=6.0
+
+# Rendu console lisible
+rich>=13.0
+
+# CLI — au choix ; argparse suffit et est dans la stdlib.
+# Décommenter si tu préfères click :
+# click>=8.1
+
+# Rapport HTML (bonus, jalon 7) — pas nécessaire avant :
+# Jinja2>=3.1
