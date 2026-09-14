@@ -1,0 +1,136 @@
+# =============================================================================
+# Règles CIS — catégorie SSH (section 5.1.x)
+# Benchmark : CIS Ubuntu Linux 22.04 LTS v3.0.0 — Level 1, profil Server
+# =============================================================================
+# Toutes ces règles sont de type `file_directive` : elles vérifient (et posent)
+# une directive `clé valeur` dans /etc/ssh/sshd_config.
+#
+# =============================================================================
+
+# Valeurs par défaut appliquées à toutes les règles du fichier, sauf surcharge.
+defaults:
+  file: /etc/ssh/sshd_config
+  separator: " "                 # sshd_config sépare la clé et la valeur par un espace
+  reload: "systemctl reload ssh" # hook exécuté après une remédiation
+
+rules:
+  # ------------------------------------------------------------------ 5.1.20
+  - id: ssh_permit_root_login
+    cis_id: "5.1.20"
+    title: "Ensure sshd PermitRootLogin is disabled"
+    level: 1
+    profile: server
+    category: ssh
+    type: file_directive
+    params:
+      directive: PermitRootLogin
+      operator: eq
+      expected: "no"
+
+  # ------------------------------------------------------------------ 5.1.19
+  - id: ssh_permit_empty_passwords
+    cis_id: "5.1.19"
+    title: "Ensure sshd PermitEmptyPasswords is disabled"
+    level: 1
+    profile: server
+    category: ssh
+    type: file_directive
+    params:
+      directive: PermitEmptyPasswords
+      operator: eq
+      expected: "no"
+
+  # ------------------------------------------------------------------ 5.1.10
+  - id: ssh_hostbased_authentication
+    cis_id: "5.1.10"
+    title: "Ensure sshd HostbasedAuthentication is disabled"
+    level: 1
+    profile: server
+    category: ssh
+    type: file_directive
+    params:
+      directive: HostbasedAuthentication
+      operator: eq
+      expected: "no"
+
+  # ------------------------------------------------------------------ 5.1.11
+  - id: ssh_ignore_rhosts
+    cis_id: "5.1.11"
+    title: "Ensure sshd IgnoreRhosts is enabled"
+    level: 1
+    profile: server
+    category: ssh
+    type: file_directive
+    params:
+      directive: IgnoreRhosts
+      operator: eq
+      expected: "yes"
+
+  # ------------------------------------------------------------------ 5.1.21
+  - id: ssh_permit_user_environment
+    cis_id: "5.1.21"
+    title: "Ensure sshd PermitUserEnvironment is disabled"
+    level: 1
+    profile: server
+    category: ssh
+    type: file_directive
+    params:
+      directive: PermitUserEnvironment
+      operator: eq
+      expected: "no"
+
+  # ------------------------------------------------------------------ 5.1.16
+  # operator: le  → conforme si la valeur relevée est <= expected
+  - id: ssh_max_auth_tries
+    cis_id: "5.1.16"
+    title: "Ensure sshd MaxAuthTries is configured"
+    level: 1
+    profile: server
+    category: ssh
+    type: file_directive
+    params:
+      directive: MaxAuthTries
+      operator: le
+      expected: 4
+
+  # ------------------------------------------------------------------ 5.1.13
+  - id: ssh_login_grace_time
+    cis_id: "5.1.13"
+    title: "Ensure sshd LoginGraceTime is configured"
+    level: 1
+    profile: server
+    category: ssh
+    type: file_directive
+    params:
+      directive: LoginGraceTime
+      operator: le
+      expected: 60          # secondes ; CIS recommande entre 1 et 60
+
+  # ------------------------------------------------------------------ 5.1.17
+  - id: ssh_max_sessions
+    cis_id: "5.1.17"
+    title: "Ensure sshd MaxSessions is configured"
+    level: 1
+    profile: server
+    category: ssh
+    type: file_directive
+    params:
+      directive: MaxSessions
+      operator: le
+      expected: 10
+
+# =============================================================================
+# NOTES DE CONCEPTION (à traiter au jalon 2)
+# -----------------------------------------------------------------------------
+# - 5.1.1 « access to sshd_config is configured » N'EST PAS une file_directive :
+#   c'est une question de permissions → règle de type `file_perms`
+#   (à placer dans permissions.yaml). Garder la frontière nette entre les types.
+#
+# - 5.1.7 « ClientAliveInterval ET ClientAliveCountMax » porte sur DEUX directives
+#   à la fois → cas des règles composées. Prévoir plus tard une variante prenant
+#   une liste de directives, plutôt que de dupliquer la règle.
+#
+# - Directives à valeur « liste » (5.1.6 Ciphers, 5.1.12 KexAlgorithms,
+#   5.1.15 MACs) : l'attendu est un ensemble d'algorithmes. La comparaison n'est
+#   plus une égalité simple → prévoir un operator `contains` / `subset`.
+# =============================================================================
