@@ -146,8 +146,8 @@ OS-hardening/
 │   ├── engine.py         # orchestration : charge, filtre, dispatch, collecte
 │   ├── rules_loader.py   # parse + VALIDE le YAML contre le schéma
 │   ├── models.py         # dataclasses Rule, Result
+│   ├── base.py           # interface Handler (check / apply)
 │   ├── handlers/
-│   │   ├── base.py       # interface Handler (check / apply)
 │   │   ├── file_directive.py
 │   │   ├── sysctl.py
 │   │   ├── kmod.py
