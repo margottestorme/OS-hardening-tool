@@ -6,6 +6,7 @@ package et le registre sera peuplé.
 """
 
 from . import file_directive  # noqa: F401
+from . import sysctl          # noqa: F401
 
 # Au fur et à mesure des jalons, ajouter ici :
-# from . import sysctl, kmod, service, file_perms  # noqa: F401
+# from . import kmod, service, file_perms  # noqa: F401
