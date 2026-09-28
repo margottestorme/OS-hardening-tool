@@ -1,0 +1,89 @@
+# =============================================================================
+# Règles CIS — permissions des fichiers sensibles (section 7.1.x)
+# Benchmark : CIS Ubuntu Linux 22.04 LTS v3.0.0 — Level 1, profil Server
+# =============================================================================
+# `mode_max` = mode octal le PLUS permissif toléré. Un mode plus strict passe.
+#
+# ⚠️  owner / group / mode_max à confirmer dans le PDF officiel. Attention en
+#     particulier au groupe de /etc/shadow et /etc/gshadow : Ubuntu les livre
+#     en groupe `shadow` (et non `root`) — vérifie ce que réclame TON benchmark.
+# =============================================================================
+
+rules:
+  - id: perms_etc_passwd
+    cis_id: "7.1.1"
+    title: "Ensure permissions on /etc/passwd are configured"
+    level: 1
+    profile: server
+    category: permissions
+    type: file_perms
+    params:
+      path: /etc/passwd
+      owner: root
+      group: root
+      mode_max: "644"
+
+  - id: perms_etc_passwd_backup
+    cis_id: "7.1.2"
+    title: "Ensure permissions on /etc/passwd- are configured"
+    level: 1
+    profile: server
+    category: permissions
+    type: file_perms
+    params:
+      path: /etc/passwd-
+      owner: root
+      group: root
+      mode_max: "644"
+
+  - id: perms_etc_group
+    cis_id: "7.1.3"
+    title: "Ensure permissions on /etc/group are configured"
+    level: 1
+    profile: server
+    category: permissions
+    type: file_perms
+    params:
+      path: /etc/group
+      owner: root
+      group: root
+      mode_max: "644"
+
+  - id: perms_etc_group_backup
+    cis_id: "7.1.4"
+    title: "Ensure permissions on /etc/group- are configured"
+    level: 1
+    profile: server
+    category: permissions
+    type: file_perms
+    params:
+      path: /etc/group-
+      owner: root
+      group: root
+      mode_max: "644"
+
+  - id: perms_etc_shadow
+    cis_id: "7.1.5"
+    title: "Ensure permissions on /etc/shadow are configured"
+    level: 1
+    profile: server
+    category: permissions
+    type: file_perms
+    params:
+      path: /etc/shadow
+      owner: root
+      group: shadow
+      mode_max: "640"
+
+  - id: perms_etc_gshadow
+    cis_id: "7.1.7"
+    title: "Ensure permissions on /etc/gshadow are configured"
+    level: 1
+    profile: server
+    category: permissions
+    type: file_perms
+    params:
+      path: /etc/gshadow
+      owner: root
+      group: shadow
+      mode_max: "640"
