@@ -1,0 +1,92 @@
+# =============================================================================
+# Règles CIS — services et paquets indésirables (section 2.x)
+# Benchmark : CIS Ubuntu Linux 22.04 LTS v3.0.0 — Level 1, profil Server
+# =============================================================================
+# Deux formes :
+#   state: absent   → le paquet ne doit pas être installé   (dpkg)
+#   state: disabled → le service doit être désactivé/masqué  (systemctl)
+#
+# ⚠️  Numéros 2.x à confirmer dans le PDF. Sur un serveur minimal, la plupart de
+#     ces paquets sont déjà absents → PASS ; rsync est souvent présent → FAIL.
+# =============================================================================
+
+rules:
+  # --- Paquets serveur qui ne doivent pas être installés (2.1.x) -----------
+  - id: svc_avahi
+    cis_id: "2.1.1"
+    title: "Ensure avahi server is not installed"
+    level: 1
+    profile: server
+    category: services
+    type: service
+    params:
+      package: avahi-daemon
+      state: absent
+
+  - id: svc_cups
+    cis_id: "2.1.2"
+    title: "Ensure CUPS is not installed"
+    level: 1
+    profile: server
+    category: services
+    type: service
+    params:
+      package: cups
+      state: absent
+
+  - id: svc_dhcp
+    cis_id: "2.1.3"
+    title: "Ensure DHCP server is not installed"
+    level: 1
+    profile: server
+    category: services
+    type: service
+    params:
+      package: isc-dhcp-server
+      state: absent
+
+  - id: svc_nfs
+    cis_id: "2.1.7"
+    title: "Ensure NFS server is not installed"
+    level: 1
+    profile: server
+    category: services
+    type: service
+    params:
+      package: nfs-kernel-server
+      state: absent
+
+  # --- Clients indésirables (2.3.x) ---------------------------------------
+  - id: svc_telnet_client
+    cis_id: "2.3.4"
+    title: "Ensure telnet client is not installed"
+    level: 1
+    profile: server
+    category: services
+    type: service
+    params:
+      package: telnet
+      state: absent
+
+  - id: svc_rsync
+    cis_id: "2.1.9"
+    title: "Ensure rsync service is not installed"
+    level: 1
+    profile: server
+    category: services
+    type: service
+    params:
+      package: rsync
+      state: absent
+
+  # --- Exemple de service à désactiver/masquer (2.x) ----------------------
+  - id: svc_rpcbind_disabled
+    cis_id: "2.1.8"
+    title: "Ensure rpcbind service is disabled or masked"
+    level: 1
+    profile: server
+    category: services
+    type: service
+    params:
+      unit: rpcbind.service
+      state: disabled
