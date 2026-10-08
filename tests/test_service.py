@@ -62,6 +62,15 @@ def test_service_not_found_is_compliant(monkeypatch):
     assert h.check(svc_rule()).status is Status.COMPLIANT
 
 
+def test_service_absent_unit_is_compliant(monkeypatch):
+    # unité inexistante : systemctl renvoie une stdout vide → traité not-found
+    h = ServiceHandler()
+    monkeypatch.setattr(h, "_run", lambda cmd: (1, ""))
+    res = h.check(svc_rule())
+    assert res.status is Status.COMPLIANT
+    assert res.actual == "not-found"
+
+
 # --- garde-fou --------------------------------------------------------------
 def test_unknown_state_is_error():
     rule = Rule(id="r", cis_id="2.1", title="T", level=1, category="services",

@@ -17,10 +17,6 @@ import subprocess
 from ..base import Handler, HandlerError, register
 from ..models import Rule, Result, Status
 
-# sorties de `systemctl is-enabled` considérées comme conformes
-_OK_ENABLED_STATES = {"disabled", "masked", "not-found"}
-
-
 @register
 class ServiceHandler(Handler):
     type = "service"
@@ -63,8 +59,12 @@ class ServiceHandler(Handler):
     def _check_service_disabled(self, rule: Rule) -> Result:
         unit = rule.params["unit"]
         _, out = self._run(["systemctl", "is-enabled", unit])
-        state = out.strip() or "unknown"
-        status = Status.COMPLIANT if state in _OK_ENABLED_STATES else Status.NON_COMPLIANT
+        # stdout vide = unité inexistante (systemctl écrit l'erreur sur stderr) :
+        # on la traite comme "not-found", donc conforme.
+        state = out.strip() or "not-found"
+        # Non conforme UNIQUEMENT si le service est activé ; tout le reste
+        # (disabled, masked, not-found, static…) est acceptable.
+        status = Status.NON_COMPLIANT if state == "enabled" else Status.COMPLIANT
         return Result(rule, status, actual=state, expected="disabled/masked")
 
     # --- exécution de commande ----------------------------------------------
