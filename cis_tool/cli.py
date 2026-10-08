@@ -1,6 +1,6 @@
-"""CLI minimale — jalon 2 (audit seul).
+"""CLI — jalons 2 à 4 (audit + rapport).
 
-Étoffée aux jalons suivants : --apply, --rollback, --report json/html.
+Étoffée au jalon 5 : --apply, --rollback.
 Codes de sortie : 0 = tout conforme, 1 = au moins une non-conformité, 2 = erreur.
 """
 
@@ -11,16 +11,10 @@ import sys
 from pathlib import Path
 
 from .engine import run_audit
-from .models import Status
+from .report import render_console, render_json, summarize
 
 # rules/ubuntu-22.04/ à la racine du dépôt (cis_tool/ est un cran en dessous)
 DEFAULT_RULES = Path(__file__).resolve().parent.parent / "rules" / "ubuntu-22.04"
-
-SYMBOLS = {
-    Status.COMPLIANT: "PASS",
-    Status.NON_COMPLIANT: "FAIL",
-    Status.ERROR: "ERR ",
-}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -33,26 +27,31 @@ def main(argv: list[str] | None = None) -> int:
                         help="catégorie à auditer (répétable, ex. --category ssh)")
     parser.add_argument("--rules", type=Path, default=DEFAULT_RULES,
                         help="fichier .yaml ou dossier de règles")
+    parser.add_argument("--report", choices=("console", "json"), default="console",
+                        help="format de sortie (défaut : console)")
+    parser.add_argument("--output", type=Path, metavar="FICHIER",
+                        help="écrire le rapport dans un fichier au lieu de la sortie standard")
     args = parser.parse_args(argv)
 
     results = run_audit(args.rules, level=args.level, categories=args.category)
 
-    n_fail = n_err = 0
-    for r in results:
-        if r.status is Status.NON_COMPLIANT:
-            n_fail += 1
-        elif r.status is Status.ERROR:
-            n_err += 1
-        actual = "" if r.actual is None else f"  (relevé : {r.actual})"
-        print(f"[{SYMBOLS[r.status]}] {r.rule.cis_id:<8} {r.rule.title}{actual}")
+    if args.report == "json":
+        text = render_json(results)
+    else:
+        # couleurs seulement en sortie console interactive (pas vers un fichier/pipe)
+        use_color = args.output is None and sys.stdout.isatty()
+        text = render_console(results, color=use_color)
 
-    total = len(results)
-    n_ok = total - n_fail - n_err
-    print(f"\n{total} règles — {n_ok} conformes, {n_fail} non conformes, {n_err} erreurs")
+    if args.output:
+        args.output.write_text(text + "\n", encoding="utf-8")
+        print(f"Rapport écrit dans {args.output}")
+    else:
+        print(text)
 
-    if n_err:
+    s = summarize(results)
+    if s["error"]:
         return 2
-    if n_fail:
+    if s["non_compliant"]:
         return 1
     return 0
 
