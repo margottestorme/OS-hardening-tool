@@ -1,29 +1,19 @@
-# OS-hardening-tool . Ubuntu 22.04 LTS
-
-Outil en ligne de commande qui **audite** une machine Ubuntu contre le benchmark CIS,
-puis **remédie** les écarts sur demande, à partir de règles déclaratives.
-
----
-
 ## 1. Benchmark retenu
 
 - **Référentiel** : CIS Ubuntu Linux 22.04 LTS Benchmark **v3.0.0**
 - **Profil** : **Level 1**, **Server** (le Level 2 est traité en bonus)
 - **Cible** : VM Ubuntu 22.04 LTS, sans interface graphique
 
-### Note de version
+### Note de version — la numérotation v3.0.0 diffère des versions antérieures
 
 | Domaine | Section v3.0.0 |
 |---|---|
-| SSH | **5.1.x** |
+| SSH | **5.1.x**  |
 | sudo / élévation de privilèges | **5.2.x** |
 | PAM (verrouillage, qualité mot de passe) | **5.3.x** |
 | Vieillissement des mots de passe (shadow suite) | **5.4.1.x** |
 | Pare-feu | **section 4** — Host Based Firewall (sortie de la section réseau) |
 | Logging / audit | **section 6** |
-
-> Le PDF officiel `CIS_Ubuntu_Linux_22.04_LTS_Benchmark_v3.0.0.pdf` fait foi pour
-> tout libellé, niveau et valeur attendue.
 
 ---
 
@@ -140,14 +130,14 @@ Le moteur ne parle qu'à cette interface : il ne sait rien du détail SSH ou sys
 ## 4. Arborescence du dépôt
 
 ```
-OS-hardening/
+cis-hardening/
 ├── cis_tool/
 │   ├── cli.py            # argparse/click : --level, --category, --apply, --rollback
 │   ├── engine.py         # orchestration : charge, filtre, dispatch, collecte
 │   ├── rules_loader.py   # parse + VALIDE le YAML contre le schéma
 │   ├── models.py         # dataclasses Rule, Result
-│   ├── base.py           # interface Handler (check / apply)
 │   ├── handlers/
+│   │   ├── base.py       # interface Handler (check / apply)
 │   │   ├── file_directive.py
 │   │   ├── sysctl.py
 │   │   ├── kmod.py
@@ -183,7 +173,23 @@ remédiations nécessitent les privilèges).
 
 ---
 
-## 6. À défendre en soutenance
+## 6. Jalons (rappel)
+
+| # | Dates | Objet |
+|---|---|---|
+| 1 | 08–14 sept. | Cadrage : benchmark, périmètre, architecture, dépôt git, VM snapshot |
+| 2 | 15–21 sept. | Moteur générique + handlers `file_directive` (SSH, sudo, PAM, login.defs) |
+| 3 | 22–28 sept. | Handlers `kmod`, `service`, `sysctl`, `file_perms` + gestion `--level` |
+| 4 | 29 sept.–05 oct. | Rapport clair (console + JSON), statut + réf. CIS |
+| 5 | 06–12 oct. | Remédiation (`--apply`, confirmation), backup, rollback |
+| 6 | 13–18 oct. | Idempotence, bonus logging (6.x) + réseau, détection d'OS |
+| 7 | 19–23 oct. | Tests avant/après sur VM fraîche, bonus HTML, doc |
+| 8 | 24–25 oct. | Finalisation, dépôt MyGES |
+| 9 | 26 oct.–01 nov. | Préparation soutenance |
+
+---
+
+## 7. À défendre en soutenance
 
 - **Choix du périmètre** : pourquoi ces catégories, pourquoi ces exclusions (§2.2).
 - **Séparation moteur / règles déclaratives** : extensibilité sans écrire de code.
