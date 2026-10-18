@@ -1,20 +1,20 @@
 # =============================================================================
-# Règles CIS — services et paquets indésirables (section 2.x)
-# Benchmark : CIS Ubuntu Linux 22.04 LTS v3.0.0 — Level 1, profil Server
+# Règles CIS — services et paquets indésirables (section 2.1.x / 2.2.x)
+# Benchmark : CIS Ubuntu Linux 22.04 LTS v3.0.0 — profil Server
 # =============================================================================
-# Deux formes :
-#   state: absent   → le paquet ne doit pas être installé   (dpkg)
-#   state: disabled → le service doit être désactivé/masqué  (systemctl)
-#
-# ⚠️  Numéros 2.x à confirmer dans le PDF. Sur un serveur minimal, la plupart de
-#     ces paquets sont déjà absents → PASS ; rsync est souvent présent → FAIL.
+# VÉRIFIÉ contre le PDF officiel. Toutes ces règles sont Level 1 - Server.
+# Corrections de numérotation v3.0.0 :
+#   avahi 2.1.2 (et non 2.1.1) · print server/CUPS 2.1.11 (et non 2.1.2)
+#   NFS 2.1.9 (et non 2.1.7) · rpcbind 2.1.12 (et non 2.1.8)
+#   rsync 2.1.13 (et non 2.1.9) · telnet client 2.2.4 (et non 2.3.4)
+# En v3.0.0 les services serveur sont libellés "services are not in use" :
+# un paquet non installé satisfait la règle, d'où l'audit par state:absent.
 # =============================================================================
 
 rules:
-  # --- Paquets serveur qui ne doivent pas être installés (2.1.x) -----------
   - id: svc_avahi
-    cis_id: "2.1.1"
-    title: "Ensure avahi server is not installed"
+    cis_id: "2.1.2"
+    title: "Ensure avahi daemon services are not in use"
     level: 1
     profile: server
     category: services
@@ -23,20 +23,9 @@ rules:
       package: avahi-daemon
       state: absent
 
-  - id: svc_cups
-    cis_id: "2.1.2"
-    title: "Ensure CUPS is not installed"
-    level: 1
-    profile: server
-    category: services
-    type: service
-    params:
-      package: cups
-      state: absent
-
   - id: svc_dhcp
     cis_id: "2.1.3"
-    title: "Ensure DHCP server is not installed"
+    title: "Ensure dhcp server services are not in use"
     level: 1
     profile: server
     category: services
@@ -46,8 +35,8 @@ rules:
       state: absent
 
   - id: svc_nfs
-    cis_id: "2.1.7"
-    title: "Ensure NFS server is not installed"
+    cis_id: "2.1.9"
+    title: "Ensure network file system services are not in use"
     level: 1
     profile: server
     category: services
@@ -56,21 +45,31 @@ rules:
       package: nfs-kernel-server
       state: absent
 
-  # --- Clients indésirables (2.3.x) ---------------------------------------
-  - id: svc_telnet_client
-    cis_id: "2.3.4"
-    title: "Ensure telnet client is not installed"
+  - id: svc_cups
+    cis_id: "2.1.11"
+    title: "Ensure print server services are not in use"
     level: 1
     profile: server
     category: services
     type: service
     params:
-      package: telnet
+      package: cups
+      state: absent
+
+  - id: svc_rpcbind
+    cis_id: "2.1.12"
+    title: "Ensure rpcbind services are not in use"
+    level: 1
+    profile: server
+    category: services
+    type: service
+    params:
+      package: rpcbind
       state: absent
 
   - id: svc_rsync
-    cis_id: "2.1.9"
-    title: "Ensure rsync service is not installed"
+    cis_id: "2.1.13"
+    title: "Ensure rsync services are not in use"
     level: 1
     profile: server
     category: services
@@ -79,14 +78,14 @@ rules:
       package: rsync
       state: absent
 
-  # --- Exemple de service à désactiver/masquer (2.x) ----------------------
-  - id: svc_rpcbind_disabled
-    cis_id: "2.1.8"
-    title: "Ensure rpcbind service is disabled or masked"
+  # --- Client indésirable (section 2.2.x) ---------------------------------
+  - id: svc_telnet_client
+    cis_id: "2.2.4"
+    title: "Ensure telnet client is not installed"
     level: 1
     profile: server
     category: services
     type: service
     params:
-      unit: rpcbind.service
-      state: disabled
+      package: telnet
+      state: absent

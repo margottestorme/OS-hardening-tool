@@ -1,13 +1,11 @@
 # =============================================================================
 # Règles CIS — modules noyau filesystem (section 1.1.1.x)
-# Benchmark : CIS Ubuntu Linux 22.04 LTS v3.0.0 — Level 1, profil Server
+# Benchmark : CIS Ubuntu Linux 22.04 LTS v3.0.0 — profil Server
 # =============================================================================
-# Chaque règle vérifie qu'un module filesystem n'est ni chargé ni chargeable.
-#
-# ⚠️  Numéros 1.1.1.x à confirmer dans le PDF. Deux modules à manier avec soin,
-#     à NE PAS remédier à l'aveugle au jalon 5 :
-#       - squashfs : utilisé par snapd → le désactiver casse les snaps (exclu ici) ;
-#       - usb-storage : le bloquer empêche les clés/disques USB de monter.
+# VÉRIFIÉ contre le PDF officiel. Toutes ces règles sont Level 1 - Server.
+# Corrections v3.0.0 : udf = 1.1.1.8 (et non 1.1.1.6), usb-storage = 1.1.1.9
+# (et non 1.1.1.7) et usb-storage est Level 1 - Server (vérifié p.47).
+# squashfs (1.1.1.7) EXCLU : utilisé par snapd, le désactiver casse les snaps.
 # =============================================================================
 
 rules:
@@ -62,7 +60,7 @@ rules:
       module: jffs2
 
   - id: mod_udf
-    cis_id: "1.1.1.6"
+    cis_id: "1.1.1.8"
     title: "Ensure udf kernel module is not available"
     level: 1
     profile: server
@@ -72,9 +70,9 @@ rules:
       module: udf
 
   - id: mod_usb_storage
-    cis_id: "1.1.1.7"
+    cis_id: "1.1.1.9"
     title: "Ensure usb-storage kernel module is not available"
-    level: 2
+    level: 1
     profile: server
     category: filesystem
     type: kmod

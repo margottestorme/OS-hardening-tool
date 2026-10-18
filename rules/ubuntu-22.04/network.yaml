@@ -1,13 +1,11 @@
 # =============================================================================
-# Règles CIS — catégorie réseau (section 3.3.x : paramètres noyau sysctl)
-# Benchmark : CIS Ubuntu Linux 22.04 LTS v3.0.0 — Level 1, profil Server
+# Règles CIS — catégorie réseau (section 3.3.1.x : paramètres noyau IPv4 sysctl)
+# Benchmark : CIS Ubuntu Linux 22.04 LTS v3.0.0 — profil Server
 # =============================================================================
-# Chaque règle vérifie qu'une clé sysctl a la valeur attendue (comparaison eq).
-#
-# ⚠️  Les numéros 3.3.x et les valeurs attendues doivent être confirmés dans le
-#     PDF officiel — il fait foi. Certaines recommandations CIS portent en plus
-#     sur la variante `.default.` de la clé (ex. conf.default.send_redirects) :
-#     ce sont des règles composées à ajouter plus tard, une clé par règle ici.
+# VÉRIFIÉ contre le PDF officiel (sous-section 3.3.1 "Configure IPv4 parameters").
+# ATTENTION : les paramètres IPv4 sont numérotés 3.3.1.x (et non 3.3.x).
+# Niveau : toutes ces règles sont Level 1 - Server, SAUF ip_forward qui est
+# Level 2 - Server (un serveur peut légitimement router) → classée level 2.
 # =============================================================================
 
 defaults:
@@ -15,9 +13,9 @@ defaults:
 
 rules:
   - id: net_ipv4_ip_forward
-    cis_id: "3.3.1"
-    title: "Ensure IP forwarding is disabled"
-    level: 1
+    cis_id: "3.3.1.1"
+    title: "Ensure net.ipv4.ip_forward is configured"
+    level: 2                       # Level 2 - Server (vérifié p.354)
     profile: server
     category: network
     type: sysctl
@@ -26,8 +24,8 @@ rules:
       expected: 0
 
   - id: net_ipv4_send_redirects
-    cis_id: "3.3.2"
-    title: "Ensure packet redirect sending is disabled"
+    cis_id: "3.3.1.4"
+    title: "Ensure net.ipv4.conf.all.send_redirects is configured"
     level: 1
     profile: server
     category: network
@@ -36,20 +34,20 @@ rules:
       key: net.ipv4.conf.all.send_redirects
       expected: 0
 
-  - id: net_ipv4_accept_source_route
-    cis_id: "3.3.3"
-    title: "Ensure source routed packets are not accepted"
+  - id: net_ipv4_icmp_ignore_broadcasts
+    cis_id: "3.3.1.7"
+    title: "Ensure net.ipv4.icmp_echo_ignore_broadcasts is configured"
     level: 1
     profile: server
     category: network
     type: sysctl
     params:
-      key: net.ipv4.conf.all.accept_source_route
-      expected: 0
+      key: net.ipv4.icmp_echo_ignore_broadcasts
+      expected: 1
 
   - id: net_ipv4_accept_redirects
-    cis_id: "3.3.4"
-    title: "Ensure ICMP redirects are not accepted"
+    cis_id: "3.3.1.8"
+    title: "Ensure net.ipv4.conf.all.accept_redirects is configured"
     level: 1
     profile: server
     category: network
@@ -59,8 +57,8 @@ rules:
       expected: 0
 
   - id: net_ipv4_secure_redirects
-    cis_id: "3.3.5"
-    title: "Ensure secure ICMP redirects are not accepted"
+    cis_id: "3.3.1.10"
+    title: "Ensure net.ipv4.conf.all.secure_redirects is configured"
     level: 1
     profile: server
     category: network
@@ -69,20 +67,9 @@ rules:
       key: net.ipv4.conf.all.secure_redirects
       expected: 0
 
-  - id: net_ipv4_icmp_ignore_broadcasts
-    cis_id: "3.3.6"
-    title: "Ensure broadcast ICMP requests are ignored"
-    level: 1
-    profile: server
-    category: network
-    type: sysctl
-    params:
-      key: net.ipv4.icmp_echo_ignore_broadcasts
-      expected: 1
-
   - id: net_ipv4_rp_filter
-    cis_id: "3.3.7"
-    title: "Ensure reverse path filtering is enabled"
+    cis_id: "3.3.1.12"
+    title: "Ensure net.ipv4.conf.all.rp_filter is configured"
     level: 1
     profile: server
     category: network
@@ -91,9 +78,20 @@ rules:
       key: net.ipv4.conf.all.rp_filter
       expected: 1
 
+  - id: net_ipv4_accept_source_route
+    cis_id: "3.3.1.14"
+    title: "Ensure net.ipv4.conf.all.accept_source_route is configured"
+    level: 1
+    profile: server
+    category: network
+    type: sysctl
+    params:
+      key: net.ipv4.conf.all.accept_source_route
+      expected: 0
+
   - id: net_ipv4_tcp_syncookies
-    cis_id: "3.3.9"
-    title: "Ensure TCP SYN cookies is enabled"
+    cis_id: "3.3.1.18"
+    title: "Ensure net.ipv4.tcp_syncookies is configured"
     level: 1
     profile: server
     category: network
